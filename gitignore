@@ -1,0 +1,9 @@
+# User config (contains machine IP)
+epilog_config.json
+
+# Captured images
+camera_captures/
+
+# Python
+__pycache__/
+*.pyc

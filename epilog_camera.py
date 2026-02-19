@@ -243,14 +243,29 @@ class EpilogCamera:
         force_str = "true" if self.force else "false"
         return f"{self._ws_url}?client={client_id}&force={force_str}"
 
-    async def _connect(self) -> websockets.ClientConnection:
+    async def _connect(self, retries: int = 3, delay: float = 2.0) -> websockets.ClientConnection:
         if self._ws is not None:
             await self._ws.close()
-        uri = self._build_uri()
-        self._ws = await websockets.connect(
-            uri, max_size=MAX_WS_SIZE, additional_headers=self._headers,
+            self._ws = None
+
+        last_exc: Exception | None = None
+        for attempt in range(1, retries + 1):
+            uri = self._build_uri()
+            try:
+                self._ws = await websockets.connect(
+                    uri, max_size=MAX_WS_SIZE, additional_headers=self._headers,
+                )
+                return self._ws
+            except (websockets.exceptions.InvalidMessage, EOFError, ConnectionError, OSError) as exc:
+                last_exc = exc
+                if attempt < retries:
+                    await asyncio.sleep(delay * attempt)
+
+        raise ConnectionError(
+            f"Could not connect to {self._ws_url} after {retries} attempts. "
+            f"Make sure the laser is powered on and reachable. "
+            f"Last error: {last_exc}"
         )
-        return self._ws
 
     async def snapshot(self, viewport: Viewport | None = None, *, timeout: float = 15) -> CameraFrame:
         """Capture a single camera frame and return it.

@@ -2,7 +2,7 @@
 
 Capture live camera images from Epilog Fusion laser cutters over the network.
 
-The [Epilog View Camera Module (NOT FUSIONMAKER 12)](https://www.epiloglaser.com/assets/downloads/camera-calibration.pdf) uses one overhead camera in the lid to photograph the laser bed. This library talks to the laser's built-in web server and streams those images back as JPEG frames.
+The [Epilog Camera Module](https://www.epiloglaser.com/assets/downloads/camera-calibration.pdf) uses one overhead cameras in the lid to photograph the laser bed. This library talks to the laser's built-in web server and streams those images back as JPEG frames.
 
 > Protocol reverse-engineered from the Epilog Pulse web interface.
 
@@ -75,8 +75,7 @@ epilog_camera [-h] [--config PATH] [--ip IP] [--port PORT] [--no-force]
               {info,probe,snapshot,stream}
 ```
 
-Global options:
-
+### Global options
 
 | Flag         | Default              | Description                                                    |
 | ------------ | -------------------- | -------------------------------------------------------------- |
@@ -84,7 +83,6 @@ Global options:
 | `--ip`       | *(from config)*      | Laser IP address (overrides config)                            |
 | `--port`     | *(from config)*      | HTTP / WebSocket port (overrides config)                       |
 | `--no-force` | off                  | Reuse an existing camera session instead of starting a new one |
-
 
 ### `info`
 
@@ -97,11 +95,19 @@ python epilog_camera.py info
 
 ### `probe`
 
-Connect to the WebSocket, send a viewport, and dump the first three raw messages. Useful for debugging.
+Connect to the WebSocket, send a viewport, and dump the first three raw messages. Useful for debugging connection issues.
 
 ```bash
 python epilog_camera.py probe
+python epilog_camera.py probe --x 6 --y 3 --w 12 --h 6
 ```
+
+| Flag   | Default | Description                    |
+| ------ | ------- | ------------------------------ |
+| `--x`  | `0`     | Viewport X origin (inches)     |
+| `--y`  | `0`     | Viewport Y origin (inches)     |
+| `--w`  | `24`    | Viewport width (inches)        |
+| `--h`  | `12`    | Viewport height (inches)       |
 
 ### `snapshot`
 
@@ -113,9 +119,17 @@ python epilog_camera.py snapshot -o my_photo.jpg
 python epilog_camera.py snapshot --x 6 --y 3 --w 12 --h 6   # center quadrant
 ```
 
+| Flag           | Default | Description                    |
+| -------------- | ------- | ------------------------------ |
+| `-o, --output` | auto    | Output file path (auto-generates a timestamped name in `camera_captures/`) |
+| `--x`          | `0`     | Viewport X origin (inches)     |
+| `--y`          | `0`     | Viewport Y origin (inches)     |
+| `--w`          | `24`    | Viewport width (inches)        |
+| `--h`          | `12`    | Viewport height (inches)       |
+
 ### `stream`
 
-Capture frames continuously until stopped with Ctrl+C (or `q` in the display window).
+Capture frames continuously until stopped with Ctrl+C (or `q` in the display window). Images are written to `camera_captures/`.
 
 ```bash
 python epilog_camera.py stream
@@ -124,7 +138,15 @@ python epilog_camera.py stream --max-frames 20     # stop after 20 frames
 python epilog_camera.py stream --no-save           # display only, don't save files
 ```
 
-Images are written to `camera_captures/`.
+| Flag             | Default | Description                                   |
+| ---------------- | ------- | --------------------------------------------- |
+| `--display`      | off     | Show live preview in an OpenCV window (q to quit) |
+| `--no-save`      | off     | Don't write frames to disk                    |
+| `--max-frames N` | --      | Stop after N frames                           |
+| `--x`            | `0`     | Viewport X origin (inches)                    |
+| `--y`            | `0`     | Viewport Y origin (inches)                    |
+| `--w`            | `24`    | Viewport width (inches)                       |
+| `--h`            | `12`    | Viewport height (inches)                      |
 
 ## Library usage
 
