@@ -2,7 +2,7 @@
 
 Capture live camera images from Epilog Fusion laser cutters over the network.
 
-The [Epilog eView Camera Module](https://www.epiloglaser.com/assets/downloads/camera-calibration.pdf) uses two overhead cameras in the lid to photograph the laser bed. This library talks to the laser's built-in web server and streams those images back as JPEG frames.
+The [Epilog View Camera Module (NOT FUSIONMAKER 12)](https://www.epiloglaser.com/assets/downloads/camera-calibration.pdf) uses one overhead camera in the lid to photograph the laser bed. This library talks to the laser's built-in web server and streams those images back as JPEG frames.
 
 > Protocol reverse-engineered from the Epilog Pulse web interface.
 
